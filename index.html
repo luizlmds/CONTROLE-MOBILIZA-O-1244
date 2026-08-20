@@ -109,6 +109,18 @@
   }
   .chip b { color: var(--text-primary); font-weight: 700; }
 
+  .header-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .btn-download {
+    display: flex; align-items: center; gap: 7px;
+    background: var(--good); color: #fff; border: none;
+    border-radius: 999px; padding: 9px 16px; cursor: pointer;
+    font: inherit; font-size: 12.5px; font-weight: 650;
+    box-shadow: var(--shadow); transition: filter .12s ease;
+  }
+  .btn-download:hover { filter: brightness(1.08); }
+  .btn-download:active { filter: brightness(0.95); }
+  .btn-download svg { flex: none; }
+
   .theme-toggle {
     display: flex; align-items: center; gap: 8px;
     background: var(--surface-card); border: 1px solid var(--border);
@@ -258,6 +270,42 @@
     .donut-grid, .callout-grid { grid-template-columns: 1fr; }
     .bar-row { grid-template-columns: 120px 1fr 78px; }
   }
+
+  /* ---------- plano de ação ---------- */
+  .action-grid { display: flex; flex-direction: column; gap: 12px; }
+  .action-item { display: flex; gap: 12px; background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+  .action-icon {
+    flex: none; width: 30px; height: 30px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .action-icon.warn { background: var(--warning-track); color: var(--warning-text); }
+  .action-icon.info { background: var(--good-track); color: var(--success-text); }
+  .action-body h3 { margin: 0 0 4px; font-size: 13px; font-weight: 650; }
+  .action-body p { margin: 0; font-size: 12.5px; color: var(--text-secondary); line-height: 1.55; }
+  .action-body p b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+
+  /* ---------- print / PDF export ---------- */
+  @media print {
+    :root, :root[data-theme="dark"] {
+      color-scheme: light;
+      --surface-1: #EDE7D3; --surface-2: #F5F1E6; --surface-card: #FFFFFF;
+      --text-primary: #17150F; --text-secondary: #4A4940; --text-muted: #6E6D64;
+      --gridline: #E4DFCE; --baseline: #C9C3AE; --border: rgba(23,21,15,0.16);
+      --good: #619935; --good-track: #DCEACB; --warning: #EAA837; --warning-track: #FBEACB;
+      --critical: #B3402F; --critical-track: #F5DAD3; --pa-neutral: #8C8B82; --pa-neutral-track: #E4E2D8;
+      --success-text: #3F6B22; --warning-text: #8A5A12;
+    }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact; }
+    body { background: #fff; padding: 0 14px; }
+    .brand-bar { margin: 0 -14px 16px; }
+    .theme-toggle, .btn-download, .card-controls, .search-wrap, #tooltip { display: none !important; }
+    .card-head { justify-content: flex-start !important; }
+    section.card, .kpi-card { box-shadow: none; border: 1px solid var(--border); break-inside: avoid; }
+    .donut-grid, .callout-grid, .bar-list { break-inside: avoid; }
+    thead th { position: static; }
+    a[href]::after { content: ""; }
+    @page { margin: 14mm 12mm; }
+  }
 </style>
 </head>
 <body>
@@ -277,9 +325,15 @@
         </div>
       </div>
     </div>
-    <div class="theme-toggle" id="themeToggle" role="button" aria-pressed="false" tabindex="0">
-      <span id="themeLabel">Modo claro</span>
-      <span class="knob"></span>
+    <div class="header-controls">
+      <button class="btn-download" id="downloadBtn" type="button">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        Baixar relatório
+      </button>
+      <div class="theme-toggle" id="themeToggle" role="button" aria-pressed="false" tabindex="0">
+        <span id="themeLabel">Modo claro</span>
+        <span class="knob"></span>
+      </div>
     </div>
   </header>
 
@@ -390,6 +444,32 @@
     <div class="empty-state" id="tableEmpty">Nenhum cargo encontrado para essa busca.</div>
   </section>
 
+  <!-- PLANO DE AÇÃO -->
+  <section class="card">
+    <div class="card-head"><h2>Plano de ação</h2></div>
+    <p class="desc">Observações da equipe do contrato sobre os itens em aberto deste painel.</p>
+    <div class="action-grid">
+      <div class="action-item">
+        <div class="action-icon warn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+        </div>
+        <div class="action-body">
+          <h3>Cadastro solicitado no Rainbow</h3>
+          <p id="actionSolicitadoText"></p>
+        </div>
+      </div>
+      <div class="action-item">
+        <div class="action-icon info">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="7" r="4"/><path d="M3 21c0-4 3.5-7 8-7s8 3 8 7"/><path d="m17 8 2 2 3.5-3.5"/></svg>
+        </div>
+        <div class="action-body">
+          <h3>Pendências de contratação</h3>
+          <p id="actionPendenteText"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <footer class="note">Parente Andrade · Painel gerado a partir da planilha de acompanhamento de mão de obra do contrato CC 1244 · dados de 19/08/2026</footer>
 </div>
 
@@ -403,16 +483,16 @@
     { cargo: "Almoxarife", aContratar: 2, contratados: 2, pendente: 0, cadastrado: 2, naoCadastrado: 0, cadastroSolicitado: 0 },
     { cargo: "Assistente de Logística Mecânica", aContratar: 2, contratados: 2, pendente: 0, cadastrado: 1, naoCadastrado: 0, cadastroSolicitado: 1 },
     { cargo: "Auxiliar Administrativo", aContratar: 2, contratados: 2, pendente: 0, cadastrado: 1, naoCadastrado: 0, cadastroSolicitado: 1 },
-    { cargo: "Auxiliar de Eletricista", aContratar: 2, contratados: 1, pendente: 1, cadastrado: 1, naoCadastrado: 1, cadastroSolicitado: 0 },
+    { cargo: "Auxiliar de Eletricista", aContratar: 2, contratados: 1, pendente: 1, cadastrado: 1, naoCadastrado: 0, cadastroSolicitado: 0 },
     { cargo: "Eletricista", aContratar: 3, contratados: 3, pendente: 0, cadastrado: 3, naoCadastrado: 0, cadastroSolicitado: 0 },
     { cargo: "Encarregado Geral", aContratar: 4, contratados: 4, pendente: 0, cadastrado: 4, naoCadastrado: 0, cadastroSolicitado: 0 },
     { cargo: "Engenheiro Civil", aContratar: 2, contratados: 2, pendente: 0, cadastrado: 2, naoCadastrado: 0, cadastroSolicitado: 0 },
-    { cargo: "Motorista Leve", aContratar: 6, contratados: 4, pendente: 2, cadastrado: 1, naoCadastrado: 0, cadastroSolicitado: 6 },
-    { cargo: "Oficial de Serviços Gerais", aContratar: 21, contratados: 16, pendente: 5, cadastrado: 14, naoCadastrado: 4, cadastroSolicitado: 0 },
+    { cargo: "Motorista Leve", aContratar: 8, contratados: 6, pendente: 2, cadastrado: 1, naoCadastrado: 0, cadastroSolicitado: 5 },
+    { cargo: "Oficial de Serviços Gerais", aContratar: 20, contratados: 18, pendente: 2, cadastrado: 14, naoCadastrado: 2, cadastroSolicitado: 2 },
     { cargo: "Operador de Auto Betoneira", aContratar: 2, contratados: 2, pendente: 0, cadastrado: 2, naoCadastrado: 0, cadastroSolicitado: 0 },
     { cargo: "Operador de Caminhão Munck", aContratar: 5, contratados: 5, pendente: 0, cadastrado: 3, naoCadastrado: 0, cadastroSolicitado: 2 },
-    { cargo: "Servente", aContratar: 32, contratados: 29, pendente: 3, cadastrado: 20, naoCadastrado: 4, cadastroSolicitado: 5 },
-    { cargo: "Técnico de Planejamento", aContratar: 2, contratados: 2, pendente: 0, cadastrado: 1, naoCadastrado: 1, cadastroSolicitado: 0 },
+    { cargo: "Servente", aContratar: 44, contratados: 29, pendente: 15, cadastrado: 20, naoCadastrado: 0, cadastroSolicitado: 9 },
+    { cargo: "Técnico de Planejamento", aContratar: 2, contratados: 2, pendente: 0, cadastrado: 2, naoCadastrado: 0, cadastroSolicitado: 0 },
     { cargo: "Técnico de Qualidade", aContratar: 2, contratados: 2, pendente: 0, cadastrado: 1, naoCadastrado: 0, cadastroSolicitado: 1 },
     { cargo: "Técnico de Segurança", aContratar: 4, contratados: 4, pendente: 0, cadastrado: 4, naoCadastrado: 0, cadastroSolicitado: 0 }
   ];
@@ -620,6 +700,13 @@
   document.getElementById("fSolicitado").textContent = fmt0(totals.cadastroSolicitado);
   document.getElementById("fNaoCadastrado").textContent = fmt0(totals.naoCadastrado);
 
+  /* ---------------- plano de ação ---------------- */
+  const topPendenteCargos = DATA.filter(d => d.pendente > 0).sort((a, b) => b.pendente - a.pendente).slice(0, 2).map(d => d.cargo);
+  document.getElementById("actionSolicitadoText").innerHTML =
+    `Atualmente <b>${fmt0(totals.cadastroSolicitado)} colaboradores</b> estão com o cadastro solicitado no Rainbow - ou seja, o cadastro já foi feito no sistema, mas ainda aguarda aprovação por parte de alguém da Taboca. Nenhuma ação adicional é necessária da nossa parte neste momento; o andamento depende do retorno do cliente.`;
+  document.getElementById("actionPendenteText").innerHTML =
+    `Das <b>${fmt0(totals.pendente)} vagas</b> ainda pendentes de contratação${topPendenteCargos.length ? `, com maior concentração em ${topPendenteCargos.join(" e ")}` : ""}, o recrutador está conduzindo o processo de recrutamento para preenchê-las.`;
+
   /* ---------------- search filter (shared) ---------------- */
   const searchBox = document.getElementById("searchBox");
   function applyFilter() {
@@ -700,6 +787,9 @@
   themeToggle.addEventListener("click", () => { dark = !dark; applyTheme(); });
   themeToggle.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); dark = !dark; applyTheme(); } });
   applyTheme();
+
+  /* ---------------- download report (PDF via print) ---------------- */
+  document.getElementById("downloadBtn").addEventListener("click", () => window.print());
 
   /* ---------------- initial render ---------------- */
   renderHiringBarsOrdered("vagas_desc");
